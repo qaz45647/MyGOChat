@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List, Tuple
 import json
 import os
 import torch
@@ -17,10 +17,6 @@ class MyGOChat:
         label_path: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'Label_Path.json'),
         max_length: int = 512
     ) -> None:
-
-        self.model_path = model_path
-        self.label_path = label_path
-
         """
         Initialize the MyGoChat instance.
         
@@ -108,6 +104,91 @@ class MyGOChat:
         except Exception as e:
             self.logger.error(f"Failed to initialize model: {e}")
             raise
+
+    def _get_top_predictions(self, probabilities: torch.Tensor, k: int = 5) -> List[Tuple[str, float]]:
+        """
+        Get top k predictions with their probabilities.
+        
+        Args:
+            probabilities (torch.Tensor): Probability distribution over labels
+            k (int): Number of top predictions to return
+            
+        Returns:
+            List[Tuple[str, float]]: List of (label, probability) tuples
+        """
+        top_k = torch.topk(probabilities, k=min(k, len(self.idx_to_label)))
+        return [
+            (self.idx_to_label[idx.item()], prob.item())
+            for idx, prob in zip(top_k.indices[0], top_k.values[0])
+        ]
+    
+    def chat_with_candidates(self, text: str, k: int = 5) -> Dict:
+        """
+        Process input text and return top k predictions with corresponding quotes and image URLs.
+        
+        Args:
+            text (str): Input text to process
+            k (int): Number of top predictions to return
+            
+        Returns:
+            Dict: Dictionary containing:
+                - 'top_prediction': Dict with 'quote' and 'image_url' for the best match
+                - 'candidates': List of dicts with 'label', 'probability', 'quote', and 'image_url'
+            
+        Raises:
+            ValueError: If input text is empty or too long
+        """
+        if not text.strip():
+            raise ValueError("Input text cannot be empty")
+            
+        try:
+            # Tokenize input
+            inputs = self.tokenizer(
+                text,
+                add_special_tokens=True,
+                max_length=self.max_length,
+                padding='max_length',
+                truncation=True,
+                return_tensors='pt'
+            )
+            
+            # Move inputs to device
+            inputs = {k: v.to(self.device) for k, v in inputs.items()}
+            
+            # Perform prediction
+            with torch.cuda.amp.autocast():
+                with torch.no_grad():
+                    outputs = self.model(**inputs)
+                    probabilities = torch.nn.functional.softmax(outputs.logits, dim=1)
+            
+            # Get top k predictions
+            top_predictions = self._get_top_predictions(probabilities, k)
+            
+            # Prepare response
+            candidates = []
+            for label, prob in top_predictions:
+                quote_data = self.quotes_data.get(label, {
+                    'quote': 'No matching quote found',
+                    'image_url': ''
+                })
+                candidates.append({
+                    'label': label,
+                    'probability': round(prob * 100, 2),  # Convert to percentage
+                    'quote': quote_data['quote'],
+                    'image_url': quote_data['image_url']
+                })
+            
+            response = {
+                'top_prediction': candidates[0],
+                'candidates': candidates
+            }
+            
+            self.logger.debug(f"Input: {text}, Top predictions: {candidates}")
+            return response
+            
+        except Exception as e:
+            self.logger.error(f"Error in chat_with_candidates: {e}")
+            raise
     
     def chat(self, text: str) -> Dict[str, str]:
         """
@@ -122,54 +203,8 @@ class MyGOChat:
         Raises:
             ValueError: If input text is empty or too long
         """
-        if not text.strip():
-            raise ValueError("Input text cannot be empty")
-            
-        try:
-            # Predict label
-            predicted_label = self._predict(text)
-            
-            # Get corresponding quote and image
-            response = self.quotes_data.get(predicted_label, {
-                'quote': 'No matching quote found',
-                'image_url': ''
-            })
-            
-            self.logger.debug(f"Input: {text}, Predicted label: {predicted_label}")
-            return response
-            
-        except Exception as e:
-            self.logger.error(f"Error in chat: {e}")
-            raise
-    
-    def _predict(self, text: str) -> str:
-        """
-        Predict the label for input text.
-        
-        Args:
-            text (str): Input text
-            
-        Returns:
-            str: Predicted label
-        """
-        # Tokenize input
-        inputs = self.tokenizer(
-            text,
-            add_special_tokens=True,
-            max_length=self.max_length,
-            padding='max_length',
-            truncation=True,
-            return_tensors='pt'
-        )
-        
-        # Move inputs to device
-        inputs = {k: v.to(self.device) for k, v in inputs.items()}
-        
-        # Perform prediction
-        with torch.cuda.amp.autocast():
-            with torch.no_grad():
-                outputs = self.model(**inputs)
-                probabilities = torch.nn.functional.softmax(outputs.logits, dim=1)
-                predicted_idx = torch.argmax(probabilities, dim=1).item()
-        
-        return self.idx_to_label[predicted_idx]
+        response = self.chat_with_candidates(text, k=1)
+        return {
+            'quote': response['top_prediction']['quote'],
+            'image_url': response['top_prediction']['image_url']
+        }
