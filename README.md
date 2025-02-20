@@ -3,9 +3,10 @@
 
 **MyGOChat** 是一個基於 [RoBERTa](https://huggingface.co/hfl/chinese-roberta-wwm-ext-large) 微調而成的模型，能夠自動分析輸入的文字內容，並推薦適合的 MyGO 圖。簡化你找 MyGO 圖的過程，更輕鬆的敷衍人。
 
-<div style="text-align: center;">
-  <img src="https://truth.bahamut.com.tw/s01/202502/d02adc47c0be9dc4a0be1b9d662baa28.JPG" alt="Image Description" style="width:70%; height:auto;">
-</div>
+<p align="center">
+  <img src="https://truth.bahamut.com.tw/s01/202502/d02adc47c0be9dc4a0be1b9d662baa28.JPG" alt="Image Description" width="70%">
+</p>
+
 
 
 <h4 align="center">
