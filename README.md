@@ -57,6 +57,16 @@ response = chat.chat("輸入你要餵給模型的內容")
 # 輸出回應
 print(f"Quote: {response['quote']}")
 print(f"Image URL: {response['image_url']}")
+
+
+# 取出5個候選答案
+result = chat.chat_with_candidates("想要那個 低頭求我啊")
+print(result)
+print('\n')
+#取出第二個結果
+print(f"Quote: {result['candidates'][1]['quote']}")
+print(f"Image URL: {result['candidates'][1]['image_url']}")
+
 ```
 
 # **Acknowledgements**
