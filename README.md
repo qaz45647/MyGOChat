@@ -21,7 +21,7 @@
 **Clone the repo:**
 
 ```bash
-git clone git@github.com:qaz45647/MyGOChat.git
+git clone https://github.com/qaz45647/MyGOChat.git
 ```
 
 ```bash
