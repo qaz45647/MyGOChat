@@ -9,7 +9,7 @@
 
 
 <h4 align="center">
-  <a href="模型訓練過程連結">模型訓練過程</a> | 
+  <a href="https://home.gamer.com.tw/artwork.php?sn=6093843">模型訓練過程</a> | 
   <a href="https://colab.research.google.com/drive/1boPRNFEXHklGYngmG4nSsydPa9pfF9jP?usp=sharing">測試模型</a>
 </h4>
 
