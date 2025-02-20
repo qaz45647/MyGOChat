@@ -60,7 +60,7 @@ print(f"Image URL: {response['image_url']}")
 
 
 # 取出5個候選答案
-result = chat.chat_with_candidates("想要那個 低頭求我啊")
+result = chat.chat_with_candidates("輸入你要餵給模型的內容")
 print(result)
 print('\n')
 #取出第二個結果
