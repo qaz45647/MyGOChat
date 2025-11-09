@@ -15,7 +15,7 @@
 </h4>
 
 <p align="center">
-  <img src="https://truth.bahamut.com.tw/s01/202511/5d760d4cb905055ca88119a678e599f0.JPG" alt="Image Description" width="100%">
+  <img src="https://truth.bahamut.com.tw/s01/202511/bf7c26730e6236bcd511691320344738.JPG" alt="Image Description" width="100%">
 </p>
 
 # **Installation**
