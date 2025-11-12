@@ -18,7 +18,7 @@
   <img src="https://truth.bahamut.com.tw/s01/202511/e234e150c508cdfcaba507c1140d62d4.JPG" 
        alt="Image Description" 
        width="100%" 
-       style="border:1px solid #000;">
+       style="border:5px solid #000;">
 </p>
 
 # **Installation**
