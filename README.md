@@ -14,7 +14,7 @@
   <a href="https://colab.research.google.com/drive/1boPRNFEXHklGYngmG4nSsydPa9pfF9jP?usp=sharing">測試模型</a>
 </h4>
 
-<p align="center"> <img src="https://truth.bahamut.com.tw/s01/202511/e234e150c508cdfcaba507c1140d62d4.JPG" alt="Image Description" width="70%"> </p>
+<p align="center"> <img src="https://truth.bahamut.com.tw/s01/202511/e234e150c508cdfcaba507c1140d62d4.JPG" alt="Image Description" width="80%"> </p>
 
 # **Installation**
 
